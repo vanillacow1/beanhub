@@ -164,23 +164,44 @@
 
       /* Now Playing Card */
       .now-playing-card {
-        background: linear-gradient(135deg, #1db954, #1ed760);
         border-radius: var(--radius);
         padding: 1rem;
         margin-bottom: 1rem;
         color: white;
-        box-shadow: 0 6px 18px rgba(29, 185, 84, 0.3);
-        display: none;
+        display: block;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        /* Always maintain the same size */
+        min-height: 80px;
+      }
+
+      .now-playing-card.inactive {
+        background: linear-gradient(135deg, #888, #aaa);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
       }
 
       .now-playing-card.active {
-        display: block;
+        background: linear-gradient(135deg, #1db954, #1ed760);
+        box-shadow: 0 6px 18px rgba(29, 185, 84, 0.3);
       }
 
       .now-playing-content {
         display: flex;
         align-items: center;
         gap: 0.8rem;
+        min-height: 48px; /* Consistent height */
+      }
+
+      .now-playing-art {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        overflow: hidden;
       }
       <!--
         Feedback
@@ -228,6 +249,7 @@
         width: 100%;
         height: 100%;
         border-radius: 8px;
+        object-fit: cover;
       }
 
       .now-playing-info {
@@ -565,15 +587,15 @@
         <div id="songOfDay">Click "Connect Spotify" to see your music!</div>
 
         <!-- Now Playing Card -->
-        <div class="now-playing-card" id="nowPlayingCard">
+        <div class="now-playing-card inactive" id="nowPlayingCard">
           <div class="now-playing-content">
             <div class="now-playing-art" id="nowPlayingArt">🎵</div>
             <div class="now-playing-info">
               <div class="now-playing-track" id="nowPlayingTrack">
-                Song Title
+                Ready to Play
               </div>
               <div class="now-playing-artist" id="nowPlayingArtist">
-                Artist Name
+                Select a song from below
               </div>
             </div>
             <div class="global-controls">
@@ -588,9 +610,6 @@
                 ▶
               </button>
               <button class="control-btn" id="nextBtn" title="Next">⏭</button>
-              <button class="control-btn" id="volumeBtn" title="Volume">
-                🔊
-              </button>
             </div>
           </div>
         </div>
@@ -663,6 +682,7 @@
       </section>
     </main>
 
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script>
       console.log("Script starting...");
 
@@ -681,6 +701,9 @@
       let currentTrack = null;
       let allTracks = [];
       let currentTrackIndex = -1;
+      let spotifyPlayer = null;
+      let deviceId = null;
+      let isSpotifySDKReady = false;
 
       const loveNotes = [
         "You brighten my day 💛",
@@ -732,7 +755,7 @@
       const clientId = "10d85455cc3e4867adaa99146642e31f";
       const redirectUri = window.location.origin + window.location.pathname;
       const scopes =
-        "user-read-private user-read-recently-played user-top-read streaming user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative";
+        "user-read-private user-read-recently-played user-top-read streaming user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative user-read-email";
 
       function generateCodeVerifier(length = 128) {
         const chars =
@@ -763,64 +786,109 @@
         const globalPlayBtn = document.getElementById("globalPlayBtn");
 
         if (!track) {
+          // Reset to default inactive state - only change colors and content
           nowPlayingCard.classList.remove("active");
+          nowPlayingCard.classList.add("inactive");
+          nowPlayingTrack.textContent = "Ready to Play";
+          nowPlayingArtist.textContent = "Select a song from below";
+          nowPlayingArt.innerHTML = "🎵";
+          if (globalPlayBtn) globalPlayBtn.textContent = "▶";
           return;
         }
 
+        // Active state with track playing - only change colors and content
+        nowPlayingCard.classList.remove("inactive");
         nowPlayingCard.classList.add("active");
         nowPlayingTrack.textContent = track.name || "Unknown Track";
         nowPlayingArtist.textContent =
           track.artists?.[0]?.name || track.artist || "Unknown Artist";
         if (globalPlayBtn) globalPlayBtn.textContent = isPlaying ? "⏸" : "▶";
 
-        // Update album art
+        // Update album art - maintain consistent size
         const albumImage =
           track.album?.images?.[0]?.url || track.images?.[0]?.url;
         if (albumImage) {
-          nowPlayingArt.innerHTML = `<img src="${albumImage}" alt="${track.name}">`;
+          nowPlayingArt.innerHTML = `<img src="${albumImage}" alt="${track.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
         } else {
           nowPlayingArt.innerHTML = "🎵";
         }
       }
 
-      function toggleGlobalPlay() {
-        if (!currentAudio) {
-          if (allTracks.length > 0) {
-            // Start playing the first track
-            const firstTrack = allTracks[0];
-            const firstSongRow = document.querySelector(".song-row");
-            if (firstSongRow && firstTrack.preview_url) {
-              playPreview(
-                firstTrack.preview_url,
-                firstTrack.name,
-                firstTrack.artists?.[0]?.name || firstTrack.artist,
-                firstSongRow
-              );
+      async function toggleGlobalPlay() {
+        try {
+          if (spotifyPlayer && isSpotifySDKReady) {
+            const state = await spotifyPlayer.getCurrentState();
+
+            if (state) {
+              // There's a current track - toggle play/pause
+              if (state.paused) {
+                await spotifyPlayer.resume();
+                console.log("Resumed playback");
+              } else {
+                await spotifyPlayer.pause();
+                console.log("Paused playback");
+              }
+            } else {
+              // No current track - start playing the first track
+              if (allTracks.length > 0) {
+                console.log(
+                  "Starting playback. Available tracks:",
+                  allTracks.length
+                );
+                const firstTrack = allTracks[0];
+                const firstSongRow = findSongRowForTrack(firstTrack);
+                const trackUri =
+                  firstTrack.uri || `spotify:track:${firstTrack.id}`;
+
+                if (firstSongRow && trackUri) {
+                  console.log("Playing first track:", firstTrack.name);
+                  playSpotifyTrack(
+                    trackUri,
+                    firstTrack.name,
+                    firstTrack.artists?.[0]?.name || firstTrack.artist,
+                    firstSongRow
+                  );
+                }
+              }
+            }
+          } else {
+            // Fallback to preview system
+            if (!currentAudio) {
+              if (allTracks.length > 0) {
+                console.log(
+                  "Starting preview playback. Available tracks:",
+                  allTracks.length
+                );
+                const firstTrack = allTracks[0];
+                const firstSongRow = findSongRowForTrack(firstTrack);
+                if (firstSongRow && firstTrack.preview_url) {
+                  console.log("Playing first track preview:", firstTrack.name);
+                  playPreviewFallback(
+                    firstTrack.preview_url,
+                    firstTrack.name,
+                    firstTrack.artists?.[0]?.name || firstTrack.artist,
+                    firstSongRow
+                  );
+                }
+              }
+              return;
+            }
+
+            if (currentAudio.paused) {
+              currentAudio.play();
+              updatePlayButtonStates(true);
+            } else {
+              currentAudio.pause();
+              updatePlayButtonStates(false);
             }
           }
-          return;
-        }
-
-        if (currentAudio.paused) {
-          currentAudio.play();
-          const globalPlayBtn = document.getElementById("globalPlayBtn");
-          if (globalPlayBtn) globalPlayBtn.textContent = "⏸";
-          if (currentPlayingRow) {
-            const playBtn = currentPlayingRow.querySelector(".play-btn");
-            if (playBtn) playBtn.textContent = "⏸";
-          }
-        } else {
-          currentAudio.pause();
-          const globalPlayBtn = document.getElementById("globalPlayBtn");
-          if (globalPlayBtn) globalPlayBtn.textContent = "▶";
-          if (currentPlayingRow) {
-            const playBtn = currentPlayingRow.querySelector(".play-btn");
-            if (playBtn) playBtn.textContent = "▶";
-          }
+        } catch (error) {
+          console.error("Error toggling playback:", error);
+          showStatus("Playback control error", "error");
         }
       }
 
-      function playNext() {
+      async function playNext() {
         if (allTracks.length === 0) return;
 
         let nextIndex = currentTrackIndex + 1;
@@ -829,21 +897,31 @@
         }
 
         const nextTrack = allTracks[nextIndex];
-        if (nextTrack && nextTrack.preview_url) {
-          const allSongRows = document.querySelectorAll(".song-row");
-          const nextSongRow = allSongRows[nextIndex];
-          if (nextSongRow) {
-            playPreview(
+        if (nextTrack) {
+          // Try to find the song row, but don't require it for playback
+          const matchingSongRow = findSongRowForTrack(nextTrack);
+          const trackUri = nextTrack.uri || `spotify:track:${nextTrack.id}`;
+
+          if (trackUri && nextTrack.id && isSpotifySDKReady) {
+            // Play without requiring a DOM element
+            playSpotifyTrack(
+              trackUri,
+              nextTrack.name,
+              nextTrack.artists?.[0]?.name || nextTrack.artist,
+              matchingSongRow // Can be null if playlist is minimized
+            );
+          } else if (nextTrack.preview_url) {
+            playPreviewFallback(
               nextTrack.preview_url,
               nextTrack.name,
               nextTrack.artists?.[0]?.name || nextTrack.artist,
-              nextSongRow
+              matchingSongRow // Can be null if playlist is minimized
             );
           }
         }
       }
 
-      function playPrevious() {
+      async function playPrevious() {
         if (allTracks.length === 0) return;
 
         let prevIndex = currentTrackIndex - 1;
@@ -852,21 +930,302 @@
         }
 
         const prevTrack = allTracks[prevIndex];
-        if (prevTrack && prevTrack.preview_url) {
-          const allSongRows = document.querySelectorAll(".song-row");
-          const prevSongRow = allSongRows[prevIndex];
-          if (prevSongRow) {
-            playPreview(
+        if (prevTrack) {
+          // Try to find the song row, but don't require it for playback
+          const matchingSongRow = findSongRowForTrack(prevTrack);
+          const trackUri = prevTrack.uri || `spotify:track:${prevTrack.id}`;
+
+          if (trackUri && prevTrack.id && isSpotifySDKReady) {
+            // Play without requiring a DOM element
+            playSpotifyTrack(
+              trackUri,
+              prevTrack.name,
+              prevTrack.artists?.[0]?.name || prevTrack.artist,
+              matchingSongRow // Can be null if playlist is minimized
+            );
+          } else if (prevTrack.preview_url) {
+            playPreviewFallback(
               prevTrack.preview_url,
               prevTrack.name,
               prevTrack.artists?.[0]?.name || prevTrack.artist,
-              prevSongRow
+              matchingSongRow // Can be null if playlist is minimized
             );
           }
         }
       }
 
-      function playPreview(previewUrl, trackName, artistName, songRow) {
+      // Helper function to find a song row that matches a track
+      function findSongRowForTrack(track) {
+        const allSongRows = document.querySelectorAll(".song-row");
+        const trackName = track.name;
+        const artistName = track.artists?.[0]?.name || track.artist;
+
+        for (let row of allSongRows) {
+          const rowTrackName = row.querySelector(".track-name")?.textContent;
+          const rowArtistName = row.querySelector(".artist-name")?.textContent;
+
+          if (rowTrackName === trackName && rowArtistName === artistName) {
+            return row;
+          }
+        }
+        return null;
+      }
+
+      // Initialize Spotify Web Playback SDK
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        console.log("Spotify Web Playback SDK is ready");
+        if (spotifyState.accessToken) {
+          initializeSpotifyPlayer();
+        }
+      };
+
+      async function initializeSpotifyPlayer() {
+        if (spotifyPlayer) {
+          console.log("Spotify player already initialized");
+          return;
+        }
+
+        try {
+          console.log("Initializing Spotify Web Player...");
+
+          const player = new Spotify.Player({
+            name: "Bean's Cozy Hub Player",
+            getOAuthToken: (cb) => {
+              console.log("Getting OAuth token for player");
+              cb(spotifyState.accessToken);
+            },
+            volume: 0.8,
+          });
+
+          // Error handling
+          player.addListener("initialization_error", ({ message }) => {
+            console.error("Spotify Player initialization error:", message);
+            showStatus(
+              "Failed to initialize Spotify player: " + message,
+              "error"
+            );
+          });
+
+          player.addListener("authentication_error", ({ message }) => {
+            console.error("Spotify Player authentication error:", message);
+            showStatus("Spotify authentication error: " + message, "error");
+          });
+
+          player.addListener("account_error", ({ message }) => {
+            console.error("Spotify Player account error:", message);
+            showStatus("Spotify Premium required for full playback", "error");
+          });
+
+          player.addListener("playback_error", ({ message }) => {
+            console.error("Spotify Player playback error:", message);
+            showStatus("Playback error: " + message, "error");
+          });
+
+          // Ready
+          player.addListener("ready", ({ device_id }) => {
+            console.log("Spotify Player ready with Device ID:", device_id);
+            deviceId = device_id;
+            isSpotifySDKReady = true;
+            showStatus(
+              "Spotify player ready! You can now play full songs.",
+              "success"
+            );
+          });
+
+          // Not Ready
+          player.addListener("not_ready", ({ device_id }) => {
+            console.log("Spotify Player device has gone offline:", device_id);
+            isSpotifySDKReady = false;
+          });
+
+          // Player state changes
+          player.addListener("player_state_changed", (state) => {
+            if (!state) return;
+
+            console.log("Player state changed:", state);
+
+            const track = state.track_window.current_track;
+            const isPlaying = !state.paused;
+
+            if (track) {
+              // Update current track info
+              currentTrack = {
+                name: track.name,
+                artists: track.artists,
+                album: { images: [{ url: track.album.images[0]?.url }] },
+                id: track.id,
+                uri: track.uri,
+              };
+
+              // Update UI
+              updateNowPlayingCard(currentTrack, isPlaying);
+              updatePlayButtonStates(isPlaying);
+
+              // Find and highlight the current playing row
+              const songRow = findSongRowForTrack(currentTrack);
+              if (songRow) {
+                // Remove playing state from all rows
+                document.querySelectorAll(".song-row").forEach((row) => {
+                  row.classList.remove("playing");
+                  const playBtn = row.querySelector(".play-btn");
+                  if (playBtn) playBtn.textContent = "▶";
+                });
+
+                // Add playing state to current row
+                if (isPlaying) {
+                  songRow.classList.add("playing");
+                  const playBtn = songRow.querySelector(".play-btn");
+                  if (playBtn) playBtn.textContent = "⏸";
+                }
+
+                currentPlayingRow = songRow;
+              }
+            }
+          });
+
+          // Connect to the player!
+          const connected = await player.connect();
+          if (connected) {
+            console.log("Successfully connected to Spotify Player");
+            spotifyPlayer = player;
+          } else {
+            console.error("Failed to connect to Spotify Player");
+            showStatus("Failed to connect to Spotify player", "error");
+          }
+        } catch (error) {
+          console.error("Error initializing Spotify player:", error);
+          showStatus(
+            "Error setting up Spotify player: " + error.message,
+            "error"
+          );
+        }
+      }
+
+      function updatePlayButtonStates(isPlaying) {
+        const globalPlayBtn = document.getElementById("globalPlayBtn");
+        if (globalPlayBtn) {
+          globalPlayBtn.textContent = isPlaying ? "⏸" : "▶";
+        }
+      }
+
+      async function playSpotifyTrack(
+        trackUri,
+        trackName,
+        artistName,
+        songRow
+      ) {
+        if (!isSpotifySDKReady || !deviceId) {
+          console.log("Spotify SDK not ready, falling back to preview");
+          playPreviewFallback(trackUri, trackName, artistName, songRow);
+          return;
+        }
+
+        try {
+          // Find track in allTracks array and update currentTrack
+          const trackData = allTracks.find(
+            (t) =>
+              t.name === trackName &&
+              (t.artists?.[0]?.name || t.artist) === artistName
+          );
+          currentTrackIndex = trackData ? allTracks.indexOf(trackData) : -1;
+
+          // Check if clicking the same song that's playing (only if songRow exists)
+          if (songRow && currentPlayingRow === songRow && spotifyPlayer) {
+            const state = await spotifyPlayer.getCurrentState();
+            if (state && !state.paused) {
+              // Pause the current track
+              await spotifyPlayer.pause();
+              return;
+            } else if (state && state.paused) {
+              // Resume the current track
+              await spotifyPlayer.resume();
+              return;
+            }
+          }
+
+          console.log("Playing Spotify track:", trackName, "by", artistName);
+          console.log("Track URI:", trackUri);
+
+          // Play the track using Spotify Web API
+          const playResponse = await fetch(
+            `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: "Bearer " + spotifyState.accessToken,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                uris: [trackUri],
+              }),
+            }
+          );
+
+          if (playResponse.ok || playResponse.status === 204) {
+            console.log("Successfully started playback");
+            showStatus(`Playing: ${trackName}`, "success");
+
+            // Update UI immediately (the player state listener will also update it)
+            currentPlayingRow = songRow;
+
+            // Remove playing state from all other rows
+            document.querySelectorAll(".song-row").forEach((row) => {
+              if (row !== songRow) {
+                row.classList.remove("playing");
+                const playBtn = row.querySelector(".play-btn");
+                if (playBtn) playBtn.textContent = "▶";
+              }
+            });
+
+            // Add playing state to current row (only if songRow exists)
+            if (songRow) {
+              songRow.classList.add("playing");
+              const playBtn = songRow.querySelector(".play-btn");
+              if (playBtn) playBtn.textContent = "⏸";
+            }
+          } else {
+            const errorData = await playResponse.text();
+            console.error("Playback failed:", playResponse.status, errorData);
+
+            if (playResponse.status === 404) {
+              showStatus(
+                "Device not found. Please refresh and try again.",
+                "error"
+              );
+            } else if (playResponse.status === 403) {
+              showStatus("Spotify Premium required for full playback", "error");
+            } else {
+              showStatus("Playback failed. Trying preview instead.", "error");
+              // Fallback to preview
+              const track = allTracks.find((t) => t.name === trackName);
+              if (track && track.preview_url) {
+                playPreviewFallback(
+                  track.preview_url,
+                  trackName,
+                  artistName,
+                  songRow
+                );
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error playing Spotify track:", error);
+          showStatus("Playback error. Trying preview instead.", "error");
+
+          // Fallback to preview
+          const track = allTracks.find((t) => t.name === trackName);
+          if (track && track.preview_url) {
+            playPreviewFallback(
+              track.preview_url,
+              trackName,
+              artistName,
+              songRow
+            );
+          }
+        }
+      }
+
+      function playPreviewFallback(previewUrl, trackName, artistName, songRow) {
         // Stop current audio if playing
         if (currentAudio) {
           currentAudio.pause();
@@ -882,8 +1241,9 @@
           return;
         }
 
-        // If clicking the same song that's playing, just stop
+        // If clicking the same song that's playing, just stop (only if songRow exists)
         if (
+          songRow &&
           currentPlayingRow === songRow &&
           currentAudio &&
           !currentAudio.paused
@@ -917,9 +1277,12 @@
         };
         currentTrackIndex = trackData ? allTracks.indexOf(trackData) : -1;
 
-        songRow.classList.add("playing");
-        const playBtn = songRow.querySelector(".play-btn");
-        if (playBtn) playBtn.textContent = "⏸";
+        // Add playing state only if songRow exists
+        if (songRow) {
+          songRow.classList.add("playing");
+          const playBtn = songRow.querySelector(".play-btn");
+          if (playBtn) playBtn.textContent = "⏸";
+        }
 
         // Update now playing card
         updateNowPlayingCard(currentTrack, true);
@@ -927,14 +1290,20 @@
         currentAudio.play().catch((error) => {
           console.error("Playback failed:", error);
           showStatus("Playback failed. Try again!", "error");
-          songRow.classList.remove("playing");
-          if (playBtn) playBtn.textContent = "▶";
+          if (songRow) {
+            songRow.classList.remove("playing");
+            const playBtn = songRow.querySelector(".play-btn");
+            if (playBtn) playBtn.textContent = "▶";
+          }
           updateNowPlayingCard(null);
         });
 
         currentAudio.onended = () => {
-          songRow.classList.remove("playing");
-          if (playBtn) playBtn.textContent = "▶";
+          if (songRow) {
+            songRow.classList.remove("playing");
+            const playBtn = songRow.querySelector(".play-btn");
+            if (playBtn) playBtn.textContent = "▶";
+          }
           currentPlayingRow = null;
           currentAudio = null;
           updateNowPlayingCard(null);
@@ -965,21 +1334,68 @@
             ${hasPreview ? '<button class="play-btn">▶</button>' : ""}
             <a href="https://open.spotify.com/track/${
               track.id || ""
-            }" target="_blank" class="spotify-link">🎵</a>
+            }" target="_blank" class="spotify-link" onclick="event.stopPropagation()">🎵</a>
           </div>
         `;
 
+        // Make the entire song row clickable (except for the Spotify link)
+        div.addEventListener("click", (e) => {
+          // Don't trigger if clicking the Spotify link
+          if (e.target.classList.contains("spotify-link")) {
+            return;
+          }
+
+          const trackUri = track.uri || `spotify:track:${track.id}`;
+          console.log(
+            "Playing track:",
+            track.name,
+            "by",
+            track.artists?.[0]?.name || track.artist
+          );
+
+          if (trackUri && track.id) {
+            playSpotifyTrack(
+              trackUri,
+              track.name,
+              track.artists?.[0]?.name || track.artist,
+              div
+            );
+          } else if (hasPreview) {
+            playPreviewFallback(
+              previewUrl,
+              track.name,
+              track.artists?.[0]?.name || track.artist,
+              div
+            );
+          } else {
+            showStatus("Track not available for playback", "info");
+          }
+        });
+
+        // Still add the play button functionality for explicit play button clicks
         if (hasPreview) {
           const playBtn = div.querySelector(".play-btn");
           if (playBtn) {
             playBtn.addEventListener("click", (e) => {
               e.stopPropagation();
-              playPreview(
-                previewUrl,
-                track.name,
-                track.artists?.[0]?.name || track.artist,
-                div
-              );
+              console.log("Play button clicked for:", track.name);
+
+              const trackUri = track.uri || `spotify:track:${track.id}`;
+              if (trackUri && track.id) {
+                playSpotifyTrack(
+                  trackUri,
+                  track.name,
+                  track.artists?.[0]?.name || track.artist,
+                  div
+                );
+              } else if (previewUrl) {
+                playPreviewFallback(
+                  previewUrl,
+                  track.name,
+                  track.artists?.[0]?.name || track.artist,
+                  div
+                );
+              }
             });
           }
         }
@@ -1024,13 +1440,32 @@
                   `;
 
                   playlistItem.addEventListener("click", () => {
+                    const playlistSongs =
+                      document.getElementById("playlistSongs");
+                    const isCurrentlySelected =
+                      playlistItem.classList.contains("selected");
+
+                    // Remove selection from all playlists
                     document
                       .querySelectorAll(".playlist-item")
                       .forEach((item) => {
                         item.classList.remove("selected");
                       });
-                    playlistItem.classList.add("selected");
-                    fetchPlaylistTracks(playlist.id, playlist.name);
+
+                    if (isCurrentlySelected) {
+                      // If clicking the same playlist, minimize it
+                      if (playlistSongs) {
+                        playlistSongs.innerHTML = "";
+                        playlistSongs.style.display = "none";
+                      }
+                    } else {
+                      // If clicking a different playlist, show it
+                      playlistItem.classList.add("selected");
+                      if (playlistSongs) {
+                        playlistSongs.style.display = "flex";
+                      }
+                      fetchPlaylistTracks(playlist.id, playlist.name);
+                    }
                   });
 
                   playlistGrid.appendChild(playlistItem);
@@ -1070,6 +1505,9 @@
               playlistSongs.innerHTML = "";
 
               if (tracks.length > 0) {
+                // Add playlist tracks to allTracks array for global controls
+                allTracks = [...allTracks, ...tracks];
+
                 tracks.forEach((track) => {
                   const songRow = createSongRow(track, playlistSongs);
                   playlistSongs.appendChild(songRow);
@@ -1200,6 +1638,10 @@
           );
           updateSpotifyButton();
           await fetchRecommendedTracks();
+          // Initialize Spotify player after successful authentication
+          if (window.Spotify) {
+            await initializeSpotifyPlayer();
+          }
         } catch (error) {
           console.error("Callback error:", error);
           showStatus(
@@ -1252,10 +1694,20 @@
           let recentTracks = [];
           if (recentRes.ok) {
             const recentData = await recentRes.json();
-            recentTracks =
+            const allRecentTracks =
               recentData.items
                 ?.map((item) => item.track)
                 .filter((track) => track && track.id) || [];
+
+            // Remove duplicates based on track ID
+            const seenTrackIds = new Set();
+            recentTracks = allRecentTracks.filter((track) => {
+              if (seenTrackIds.has(track.id)) {
+                return false; // Skip duplicate
+              }
+              seenTrackIds.add(track.id);
+              return true; // Keep unique track
+            });
           }
 
           // If no recently played, fallback to top tracks
@@ -1536,6 +1988,10 @@
             showStatus(`Welcome back, ${userName || "Bean"}! 🎵`, "success");
             updateSpotifyButton();
             fetchRecommendedTracks();
+            // Initialize Spotify player if SDK is ready
+            if (window.Spotify) {
+              initializeSpotifyPlayer();
+            }
           } else {
             showStatus("Spotify session expired. Please reconnect.", "error");
             clearStoredAuth();
@@ -1567,20 +2023,11 @@
         const globalPlayBtn = document.getElementById("globalPlayBtn");
         const prevBtn = document.getElementById("prevBtn");
         const nextBtn = document.getElementById("nextBtn");
-        const volumeBtn = document.getElementById("volumeBtn");
 
         if (globalPlayBtn)
           globalPlayBtn.addEventListener("click", toggleGlobalPlay);
         if (prevBtn) prevBtn.addEventListener("click", playPrevious);
         if (nextBtn) nextBtn.addEventListener("click", playNext);
-        if (volumeBtn) {
-          volumeBtn.addEventListener("click", () => {
-            if (currentAudio) {
-              currentAudio.volume = currentAudio.volume > 0 ? 0 : 1;
-              volumeBtn.textContent = currentAudio.volume > 0 ? "🔊" : "🔇";
-            }
-          });
-        }
 
         // Other buttons
         const buttons = [

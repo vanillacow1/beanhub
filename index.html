@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bean’s Cozy Hub</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* --- Base Styling --- */
+      :root {
+        --cream: #fef6e4;
+        --sage: #c7d5b8;
+        --lavender: #d8c6f2;
+        --rose: #f4d1d1;
+        --shadow: rgba(0, 0, 0, 0.08);
+        --radius: 15px;
+        --transition: 0.3s ease;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Helvetica", sans-serif;
+      }
+      body {
+        background: var(--cream);
+        color: #333;
+        overflow-y: scroll;
+      }
+
+      header {
+        text-align: center;
+        padding: 2rem 1rem;
+        font-size: 1.5rem;
+      }
+      .love-note {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+        color: #555;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      section.card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 12px var(--shadow);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        scroll-snap-align: start;
+      }
+
+      section.card h2 {
+        font-size: 1.2rem;
+        color: #444;
+        margin-bottom: 0.5rem;
+      }
+
+      .horizontal-scroll {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+      }
+      .horizontal-scroll::-webkit-scrollbar {
+        height: 6px;
+      }
+      .horizontal-scroll::-webkit-scrollbar-thumb {
+        background: var(--sage);
+        border-radius: 3px;
+      }
+
+      .card-item {
+        min-width: 200px;
+        background: var(--rose);
+        border-radius: var(--radius);
+        padding: 1rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px var(--shadow);
+        transition: transform var(--transition);
+      }
+      .card-item:hover {
+        transform: translateY(-3px);
+      }
+
+      button {
+        background: var(--lavender);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: transform var(--transition), box-shadow var(--transition);
+      }
+      button:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 6px var(--shadow);
+      }
+
+      img {
+        width: 100%;
+        border-radius: var(--radius);
+      }
+
+      /* Cozy Extras Animations */
+      .sparkle:hover {
+        animation: sparkle 0.6s ease-in-out;
+      }
+      @keyframes sparkle {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1) rotate(10deg);
+          opacity: 0.8;
+        }
+      }
+
+      /* Mobile first touch spacing */
+      @media (max-width: 600px) {
+        header {
+          font-size: 1.2rem;
+        }
+        .card-item {
+          min-width: 150px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      Good morning, Bean 🌞
+      <div class="love-note" id="loveNote">You’re amazing, always 💛</div>
+    </header>
+
+    <main>
+      <!-- 🎵 Music Hub -->
+      <section class="card" id="musicHub">
+        <h2>🎵 Music Hub</h2>
+        <div id="songOfDay">Loading Song of the Day...</div>
+        <div class="horizontal-scroll" id="playlistCards">
+          <!-- Playlist items go here -->
+        </div>
+        <button id="addSongBtn">Add Song to Personal List</button>
+      </section>
+
+      <!-- 📺 Favorite Creators -->
+      <section class="card" id="creatorsHub">
+        <h2>📺 Favorite Creators</h2>
+        <div class="horizontal-scroll" id="creatorCards">
+          <!-- YouTube creator cards -->
+        </div>
+        <button id="watchLaterBtn">Add to Watch Later</button>
+      </section>
+
+      <!-- 🧶 Knitting Hub -->
+      <section class="card" id="knittingHub">
+        <h2>🧶 Knitting Hub</h2>
+        <div id="trendingPosts">Trending posts loading...</div>
+        <button id="randomPatternBtn">Random Pattern Suggestion</button>
+        <div class="horizontal-scroll" id="yarnShopDeals">
+          <!-- Yarn shop deals -->
+        </div>
+      </section>
+
+      <!-- 🎬 Movies & Shows -->
+      <section class="card" id="moviesHub">
+        <h2>🎬 Movies & Shows</h2>
+        <div class="horizontal-scroll" id="movieCards">
+          <!-- Movie/show cards -->
+        </div>
+        <button id="randomPickBtn">Random Pick</button>
+      </section>
+
+      <!-- 🍲 Recipe Section -->
+      <section class="card" id="recipesHub">
+        <h2>🍲 Recipes</h2>
+        <div class="horizontal-scroll" id="recipeCards">
+          <!-- Recipe cards -->
+        </div>
+        <button id="randomRecipeBtn">Random Recipe</button>
+      </section>
+
+      <!-- 🌱 Plant Hub -->
+      <section class="card" id="plantHub">
+        <h2>🌱 Plant Hub</h2>
+        <input type="text" placeholder="Search for a plant" id="plantSearch" />
+        <button id="addPlantBtn">Add Plant</button>
+        <div id="needsWatering">Plants needing water today...</div>
+        <div class="horizontal-scroll" id="plantCards">
+          <!-- Plant cards -->
+        </div>
+      </section>
+
+      <!-- 🌤️ Cozy Extras -->
+      <section class="card" id="cozyExtras">
+        <h2>🌤️ Cozy Extras</h2>
+        <div id="weatherWidget">Weather loading...</div>
+        <button id="surpriseMeBtn">Surprise Me 🌟</button>
+        <div id="memoryScrapbook">Memory scrapbook content here...</div>
+      </section>
+    </main>
+
+    <script>
+      // --- Love Note Rotation ---
+      const loveNotes = [
+        "You brighten my day 💛",
+        "You’re the best, Bean 🌸",
+        "Love you endlessly 💕",
+        "You’re magical, truly ✨",
+      ];
+      let noteIndex = 0;
+      setInterval(() => {
+        noteIndex = (noteIndex + 1) % loveNotes.length;
+        document.getElementById("loveNote").textContent = loveNotes[noteIndex];
+      }, 7000);
+
+      // --- Example Button Events ---
+      document
+        .getElementById("addSongBtn")
+        .addEventListener("click", () =>
+          alert("Add song functionality coming!")
+        );
+      document
+        .getElementById("watchLaterBtn")
+        .addEventListener("click", () =>
+          alert("Watch Later functionality coming!")
+        );
+      document
+        .getElementById("randomPatternBtn")
+        .addEventListener("click", () =>
+          alert("Random Pattern functionality coming!")
+        );
+      document
+        .getElementById("randomPickBtn")
+        .addEventListener("click", () =>
+          alert("Random Pick functionality coming!")
+        );
+      document
+        .getElementById("randomRecipeBtn")
+        .addEventListener("click", () =>
+          alert("Random Recipe functionality coming!")
+        );
+      document
+        .getElementById("addPlantBtn")
+        .addEventListener("click", () =>
+          alert("Add Plant functionality coming!")
+        );
+      document
+        .getElementById("surpriseMeBtn")
+        .addEventListener("click", () => alert("Surprise content!"));
+    </script>
+  </body>
+</html>

@@ -10,14 +10,31 @@
     />
     <style>
       :root {
-        --cream: #fef6e4;
-        --sage: #c7d5b8;
-        --lavender: #d8c6f2;
-        --rose: #f4d1d1;
-        --butter: #fff4b1;
-        --shadow: rgba(0, 0, 0, 0.12);
-        --radius: 16px;
-        --transition: 0.25s ease;
+        /* Professional Color Palette */
+        --cream: #f8f6f0;
+        --cream-dark: #f0ede4;
+        --brown: #8b4513;
+        --brown-light: #a0522d;
+        --brown-dark: #654321;
+        --green: #2d5016;
+        --green-light: #3d6b23;
+        --green-lighter: #4a7c2a;
+        --accent-warm: #d2b48c;
+        --accent-gold: #daa520;
+
+        /* UI Colors */
+        --text-primary: #2c3e18;
+        --text-secondary: #5a6b47;
+        --text-muted: #8b9684;
+        --border-light: rgba(139, 69, 19, 0.1);
+        --shadow: rgba(44, 62, 24, 0.15);
+        --shadow-light: rgba(44, 62, 24, 0.08);
+
+        /* Design System */
+        --radius: 12px;
+        --radius-large: 16px;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --spacing: 1rem;
       }
 
       * {
@@ -28,63 +45,93 @@
 
       body {
         font-family: "Roboto", sans-serif;
-        background: linear-gradient(160deg, #fef6e4 0%, #d8c6f2 100%);
-        color: #333;
+        background: linear-gradient(
+          135deg,
+          var(--cream) 0%,
+          var(--cream-dark) 50%,
+          #e8e0d0 100%
+        );
+        color: var(--text-primary);
         min-height: 100vh;
         overflow-y: scroll;
         padding: 0;
+        line-height: 1.6;
       }
 
       header {
         text-align: center;
-        padding: 1.5rem 1rem 1rem;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 2rem 1rem 1.5rem;
+        background: rgba(248, 246, 240, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 2px solid var(--border-light);
+        box-shadow: 0 4px 20px var(--shadow-light);
       }
 
       header h1 {
         font-family: "Pacifico", cursive;
-        font-size: 1.8rem;
-        color: #6b5b95;
+        font-size: 2rem;
+        color: var(--green);
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(45, 80, 22, 0.1);
       }
 
       .love-note {
-        font-size: 0.9rem;
-        color: #666;
+        font-size: 1rem;
+        color: var(--brown-light);
         font-style: italic;
-        margin-top: 0.2rem;
+        font-weight: 400;
+        margin-top: 0.5rem;
       }
 
       main {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
-        padding: 0 1rem 2rem;
+        gap: 2rem;
+        padding: 2rem 1rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
       section.card {
-        backdrop-filter: blur(6px);
-        background: rgba(255, 255, 255, 0.75);
-        border-radius: var(--radius);
-        padding: 1rem;
+        background: rgba(248, 246, 240, 0.9);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-large);
+        padding: 1.5rem;
         display: flex;
         flex-direction: column;
-        gap: 0.8rem;
-        box-shadow: 0 6px 18px var(--shadow);
+        gap: 1rem;
+        box-shadow: 0 8px 32px var(--shadow);
         transition: transform var(--transition), box-shadow var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      section.card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--green) 0%,
+          var(--brown) 50%,
+          var(--accent-gold) 100%
+        );
       }
 
       section.card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px var(--shadow);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px var(--shadow);
       }
 
       section.card h2 {
         font-family: "Pacifico", cursive;
-        font-size: 1.3rem;
-        color: #444;
-        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+        color: var(--green);
+        margin-bottom: 0.75rem;
+        position: relative;
       }
 
       .horizontal-scroll {
@@ -146,20 +193,45 @@
       }
 
       .music-section {
-        min-width: 280px;
+        min-width: 300px;
         flex-shrink: 0;
-        background: rgba(255, 255, 255, 0.5);
+        background: rgba(240, 237, 228, 0.7);
+        border: 1px solid var(--border-light);
         border-radius: var(--radius);
-        padding: 1rem;
-        box-shadow: 0 4px 12px var(--shadow);
+        padding: 1.25rem;
+        box-shadow: 0 4px 16px var(--shadow-light);
+        transition: all var(--transition);
+      }
+
+      .music-section:hover {
+        background: rgba(240, 237, 228, 0.9);
+        box-shadow: 0 6px 24px var(--shadow);
       }
 
       .music-section h3 {
         font-family: "Pacifico", cursive;
-        font-size: 1.1rem;
-        color: #444;
-        margin-bottom: 0.8rem;
+        font-size: 1.15rem;
+        color: var(--brown);
+        margin-bottom: 1rem;
         text-align: center;
+        position: relative;
+        padding-bottom: 0.5rem;
+      }
+
+      .music-section h3::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--brown-light),
+          var(--accent-warm)
+        );
+        border-radius: 1px;
       }
 
       /* Now Playing Card */
@@ -175,13 +247,17 @@
       }
 
       .now-playing-card.inactive {
-        background: linear-gradient(135deg, #888, #aaa);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(
+          135deg,
+          var(--text-muted),
+          var(--brown-light)
+        );
+        box-shadow: 0 6px 24px rgba(139, 150, 132, 0.3);
       }
 
       .now-playing-card.active {
-        background: linear-gradient(135deg, #1db954, #1ed760);
-        box-shadow: 0 6px 18px rgba(29, 185, 84, 0.3);
+        background: linear-gradient(135deg, var(--green), var(--green-lighter));
+        box-shadow: 0 8px 32px rgba(45, 80, 22, 0.4);
       }
 
       .now-playing-content {
@@ -301,17 +377,25 @@
       }
 
       .control-btn.primary {
-        background: rgba(255, 255, 255, 0.9);
-        color: #1db954;
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
+        background: rgba(248, 246, 240, 0.95);
+        color: var(--green);
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        border: 2px solid rgba(248, 246, 240, 0.8);
+      }
+
+      .control-btn.primary:hover {
+        background: var(--cream);
+        color: var(--green-light);
+        transform: scale(1.15);
       }
 
       /* Songs Lists */
       #recentSongs,
       #suggestedSongs,
-      #playlistSongs {
+      #playlistSongs,
+      #discoverySongs {
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
@@ -322,15 +406,149 @@
 
       #recentSongs::-webkit-scrollbar,
       #suggestedSongs::-webkit-scrollbar,
-      #playlistSongs::-webkit-scrollbar {
+      #playlistSongs::-webkit-scrollbar,
+      #discoverySongs::-webkit-scrollbar {
         width: 4px;
       }
 
       #recentSongs::-webkit-scrollbar-thumb,
       #suggestedSongs::-webkit-scrollbar-thumb,
-      #playlistSongs::-webkit-scrollbar-thumb {
+      #playlistSongs::-webkit-scrollbar-thumb,
+      #discoverySongs::-webkit-scrollbar-thumb {
         background: var(--sage);
         border-radius: 2px;
+      }
+
+      /* Discovery Messages */
+      #discoveryMessages {
+        text-align: center;
+        color: #666;
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        display: none;
+      }
+
+      /* Loading States */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--cream-dark);
+        border-top: 2px solid var(--brown);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-skeleton {
+        background: linear-gradient(
+          90deg,
+          var(--cream-dark) 25%,
+          #e8e0d0 50%,
+          var(--cream-dark) 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 8px;
+      }
+
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      .skeleton-song {
+        height: 48px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px;
+      }
+
+      .skeleton-art {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .skeleton-info {
+        flex: 1;
+      }
+
+      .skeleton-title {
+        height: 14px;
+        width: 70%;
+        margin-bottom: 6px;
+        border-radius: 4px;
+      }
+
+      .skeleton-artist {
+        height: 12px;
+        width: 50%;
+        border-radius: 4px;
+      }
+
+      /* Quick transitions */
+      .song-row,
+      .playlist-item {
+        transition: transform 0.15s ease, box-shadow 0.15s ease,
+          background-color 0.15s ease;
+      }
+
+      .music-section {
+        transition: opacity 0.2s ease;
+      }
+
+      .music-section.loading {
+        opacity: 0.6;
+      }
+
+      /* Smooth scrolling for music sections */
+      .music-sections {
+        scroll-behavior: smooth;
+      }
+
+      /* Quick hover effects */
+      .song-row:hover,
+      .playlist-item:hover {
+        transform: translateY(-2px) scale(1.01);
+      }
+
+      /* Fast button feedback */
+      button:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+      }
+
+      .control-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Optimized images */
+      .song-row img,
+      .playlist-art img,
+      .now-playing-art img {
+        image-rendering: optimizeSpeed;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
       }
 
       /* Playlists Section */
@@ -347,40 +565,44 @@
       .playlist-item {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
-        background: rgba(255, 255, 255, 0.8);
-        padding: 0.5rem;
-        border-radius: 10px;
+        gap: 0.75rem;
+        background: rgba(248, 246, 240, 0.8);
+        padding: 0.75rem;
+        border-radius: var(--radius);
         cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transition: all var(--transition);
+        box-shadow: 0 2px 8px var(--shadow-light);
+        border: 1px solid var(--border-light);
       }
 
       .playlist-item:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px var(--shadow);
+        background: var(--cream);
+        border-color: var(--brown-light);
       }
 
       .playlist-item.selected {
         background: linear-gradient(
           135deg,
-          rgba(29, 185, 84, 0.2),
-          rgba(30, 215, 96, 0.2)
+          rgba(45, 80, 22, 0.15),
+          rgba(61, 107, 35, 0.15)
         );
-        border: 1px solid rgba(29, 185, 84, 0.3);
+        border: 1px solid var(--green-light);
+        box-shadow: 0 4px 16px rgba(45, 80, 22, 0.2);
       }
 
       .playlist-art {
-        width: 40px;
-        height: 40px;
-        border-radius: 6px;
-        background: linear-gradient(135deg, #1db954, #1ed760);
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--brown), var(--brown-light));
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 0.8rem;
+        color: var(--cream);
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
       }
 
       .playlist-art img {
@@ -395,43 +617,49 @@
       }
 
       .playlist-name {
-        font-weight: 500;
-        font-size: 0.8rem;
+        font-weight: 600;
+        font-size: 0.9rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        margin-bottom: 0.1rem;
+        margin-bottom: 0.2rem;
+        color: var(--text-primary);
       }
 
       .playlist-count {
-        font-size: 0.7rem;
-        color: #666;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 400;
       }
 
       .song-row {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.8);
-        padding: 0.4rem 0.6rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        gap: 0.75rem;
+        background: rgba(248, 246, 240, 0.9);
+        padding: 0.6rem 0.8rem;
+        border-radius: var(--radius);
+        box-shadow: 0 2px 8px var(--shadow-light);
+        transition: all var(--transition);
         cursor: pointer;
+        border: 1px solid var(--border-light);
       }
 
       .song-row:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px var(--shadow);
+        background: var(--cream);
+        border-color: var(--brown-light);
       }
 
       .song-row.playing {
         background: linear-gradient(
           135deg,
-          rgba(29, 185, 84, 0.2),
-          rgba(30, 215, 96, 0.2)
+          rgba(45, 80, 22, 0.15),
+          rgba(74, 124, 42, 0.15)
         );
-        border: 1px solid rgba(29, 185, 84, 0.3);
+        border: 1px solid var(--green-light);
+        box-shadow: 0 4px 16px rgba(45, 80, 22, 0.25);
       }
 
       .song-row img {
@@ -454,8 +682,20 @@
         overflow: hidden;
       }
 
+      .song-info .track-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
       .song-info .artist-name {
-        color: #555;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 400;
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
@@ -469,56 +709,74 @@
       }
 
       .play-btn {
-        background: linear-gradient(135deg, #1db954, #1ed760);
+        background: linear-gradient(135deg, var(--green), var(--green-light));
         border: none;
         border-radius: 50%;
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s ease;
-        color: white;
-        font-size: 0.7rem;
+        transition: all var(--transition);
+        color: var(--cream);
+        font-size: 0.8rem;
+        box-shadow: 0 2px 8px rgba(45, 80, 22, 0.3);
       }
 
       .play-btn:hover {
         transform: scale(1.1);
-        box-shadow: 0 2px 8px rgba(29, 185, 84, 0.4);
+        box-shadow: 0 4px 12px rgba(45, 80, 22, 0.5);
+        background: linear-gradient(
+          135deg,
+          var(--green-light),
+          var(--green-lighter)
+        );
       }
 
       .spotify-link {
-        color: #1db954;
+        color: var(--brown);
         text-decoration: none;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         opacity: 0.7;
-        transition: opacity 0.2s ease;
+        transition: all var(--transition);
+        padding: 0.2rem;
+        border-radius: 4px;
       }
 
       .spotify-link:hover {
         opacity: 1;
+        background: rgba(139, 69, 19, 0.1);
+        transform: scale(1.1);
       }
 
       button {
-        background: linear-gradient(135deg, var(--lavender), var(--rose));
+        background: linear-gradient(135deg, var(--brown), var(--brown-light));
         border: none;
-        padding: 0.6rem 1.2rem;
-        border-radius: 999px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
         cursor: pointer;
-        font-weight: 500;
-        color: #fff;
-        transition: transform var(--transition), box-shadow var(--transition);
+        font-weight: 600;
+        color: var(--cream);
+        font-size: 0.9rem;
+        transition: all var(--transition);
+        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        border: 1px solid var(--brown-dark);
       }
 
       button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 14px var(--shadow);
+        box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
+        background: linear-gradient(
+          135deg,
+          var(--brown-light),
+          var(--accent-warm)
+        );
       }
 
       button:active {
-        transform: scale(0.95);
-        box-shadow: 0 3px 6px var(--shadow);
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
       }
 
       button:disabled {
@@ -528,7 +786,16 @@
       }
 
       .button-connected {
-        background: linear-gradient(135deg, var(--sage), #98b49a);
+        background: linear-gradient(135deg, var(--green), var(--green-light));
+        border-color: var(--green-light);
+      }
+
+      .button-connected:hover {
+        background: linear-gradient(
+          135deg,
+          var(--green-light),
+          var(--green-lighter)
+        );
       }
 
       input[type="text"] {
@@ -540,36 +807,162 @@
       }
 
       .status-message {
-        font-size: 0.85rem;
-        padding: 0.5rem;
-        border-radius: 8px;
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
         text-align: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
         display: none;
+        font-weight: 500;
+        border: 1px solid;
       }
 
       .status-success {
-        background: rgba(199, 213, 184, 0.3);
-        color: #4a5c3a;
+        background: rgba(45, 80, 22, 0.1);
+        color: var(--green);
+        border-color: rgba(45, 80, 22, 0.2);
       }
 
       .status-error {
-        background: rgba(244, 209, 209, 0.5);
-        color: #8b4513;
+        background: rgba(139, 69, 19, 0.1);
+        color: var(--brown);
+        border-color: rgba(139, 69, 19, 0.2);
       }
 
       .status-info {
-        background: rgba(216, 198, 242, 0.3);
-        color: #6b5b95;
+        background: rgba(210, 180, 140, 0.2);
+        color: var(--brown-dark);
+        border-color: rgba(210, 180, 140, 0.3);
       }
 
-      @media (max-width: 600px) {
+      /* Mobile Optimizations */
+      @media (max-width: 768px) {
+        main {
+          padding: 1rem 0.75rem 2rem;
+          gap: 1.5rem;
+        }
+
+        header {
+          padding: 1.5rem 1rem 1rem;
+        }
+
         header h1 {
-          font-size: 1.6rem;
+          font-size: 1.7rem;
         }
-        .card-item {
-          min-width: 150px;
+
+        section.card {
+          padding: 1.25rem;
+          margin: 0 0.25rem;
         }
+
+        .music-sections {
+          gap: 0.75rem;
+        }
+
+        .music-section {
+          min-width: 280px;
+          padding: 1rem;
+        }
+
+        .now-playing-card {
+          margin-bottom: 1.25rem;
+        }
+
+        .song-row {
+          padding: 0.5rem 0.6rem;
+        }
+
+        button {
+          padding: 0.6rem 1.25rem;
+          font-size: 0.85rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        main {
+          padding: 1rem 0.5rem 2rem;
+        }
+
+        header h1 {
+          font-size: 1.5rem;
+        }
+
+        .music-section {
+          min-width: 260px;
+        }
+
+        .now-playing-content {
+          gap: 0.5rem;
+        }
+
+        .control-btn.primary {
+          width: 36px;
+          height: 36px;
+        }
+      }
+      #creatorsHub {
+        padding: 1.25rem;
+        background: var(--cream);
+        border-radius: var(--radius-lg, 12px);
+        box-shadow: 0 4px 12px var(--shadow-light);
+        margin: 1.5rem 0;
+        border: 1px solid var(--border-light);
+      }
+
+      #creatorsHub h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        text-align: left;
+      }
+
+      #creatorCards {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scroll-snap-type: x mandatory;
+      }
+
+      .creator-card {
+        flex: 0 0 auto;
+        width: 140px;
+        background: rgba(248, 246, 240, 0.9);
+        border-radius: var(--radius);
+        border: 1px solid var(--border-light);
+        box-shadow: 0 2px 8px var(--shadow-light);
+        scroll-snap-align: start;
+        transition: all var(--transition);
+        cursor: pointer;
+      }
+
+      .creator-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px var(--shadow);
+        background: var(--cream);
+        border-color: var(--brown-light);
+      }
+
+      .creator-card img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: var(--radius) var(--radius) 0 0;
+      }
+
+      .creator-card p {
+        margin: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-align: center;
+      }
+
+      /* Button already inherits from your global button rules */
+      #watchLaterBtn {
+        margin-top: 1rem;
+        width: 100%;
       }
     </style>
   </head>
@@ -630,6 +1023,14 @@
             <div class="playlist-grid" id="playlistGrid"></div>
             <div id="playlistSongs"></div>
           </div>
+
+          <div class="music-section">
+            <h3>🎯 Discover New</h3>
+            <div id="discoveryMessages">
+              Connect Spotify to discover new music based on your taste!
+            </div>
+            <div id="discoverySongs"></div>
+          </div>
         </div>
 
         <button id="connectSpotifyBtn">Connect Spotify</button>
@@ -682,7 +1083,6 @@
       </section>
     </main>
 
-    <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script>
       console.log("Script starting...");
 
@@ -704,6 +1104,14 @@
       let spotifyPlayer = null;
       let deviceId = null;
       let isSpotifySDKReady = false;
+
+      // Define the Spotify SDK callback function globally
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        console.log("Spotify Web Playback SDK is ready");
+        if (spotifyState.accessToken) {
+          initializeSpotifyPlayer();
+        }
+      };
 
       const loveNotes = [
         "You brighten my day 💛",
@@ -732,8 +1140,55 @@
           if (type !== "error") {
             setTimeout(() => {
               statusEl.style.display = "none";
-            }, 5000);
+            }, 3000); // Faster dismiss
           }
+        }
+      }
+
+      // Loading state management
+      function showLoadingState(containerId, message = "Loading...") {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; padding: 20px; color: #666;">
+            <div class="loading-spinner"></div>
+            <span>${message}</span>
+          </div>
+        `;
+      }
+
+      function showSkeletonLoading(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const skeletons = Array.from(
+          { length: 5 },
+          (_, i) => `
+          <div class="skeleton-song">
+            <div class="loading-skeleton skeleton-art"></div>
+            <div class="skeleton-info">
+              <div class="loading-skeleton skeleton-title"></div>
+              <div class="loading-skeleton skeleton-artist"></div>
+            </div>
+          </div>
+        `
+        ).join("");
+
+        container.innerHTML = skeletons;
+      }
+
+      function addSectionLoadingState(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.classList.add("loading");
+        }
+      }
+
+      function removeSectionLoadingState(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.classList.remove("loading");
         }
       }
 
@@ -970,14 +1425,6 @@
         }
         return null;
       }
-
-      // Initialize Spotify Web Playback SDK
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        console.log("Spotify Web Playback SDK is ready");
-        if (spotifyState.accessToken) {
-          initializeSpotifyPlayer();
-        }
-      };
 
       async function initializeSpotifyPlayer() {
         if (spotifyPlayer) {
@@ -1318,12 +1765,16 @@
         const previewUrl = track.preview_url;
         const hasPreview = !!previewUrl;
 
+        // Use smaller images for faster loading
+        const imageUrl =
+          track.album?.images?.[2]?.url || // Small (64x64)
+          track.album?.images?.[1]?.url || // Medium (300x300)
+          track.album?.images?.[0]?.url || // Large (640x640)
+          track.images?.[0]?.url ||
+          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23ddd"/><text x="20" y="24" text-anchor="middle" font-size="12" fill="%23999">♪</text></svg>';
+
         div.innerHTML = `
-          <img src="${
-            track.album?.images?.[0]?.url ||
-            track.images?.[0]?.url ||
-            'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23ddd"/><text x="20" y="24" text-anchor="middle" font-size="12" fill="%23999">♪</text></svg>'
-          }" alt="${track.name}">
+          <img src="${imageUrl}" alt="${track.name}" loading="lazy">
           <div class="song-info">
             <p class="track-name">${track.name}</p>
             <p class="artist-name">${
@@ -1406,7 +1857,7 @@
       async function fetchUserPlaylists() {
         try {
           const playlistsRes = await fetch(
-            "https://api.spotify.com/v1/me/playlists?limit=20",
+            "https://api.spotify.com/v1/me/playlists?limit=15", // Reduced for faster loading
             { headers: { Authorization: "Bearer " + spotifyState.accessToken } }
           );
 
@@ -1423,11 +1874,18 @@
                   const playlistItem = document.createElement("div");
                   playlistItem.className = "playlist-item";
 
+                  // Use smaller playlist images for faster loading
+                  const playlistImageUrl =
+                    playlist.images && playlist.images.length > 0
+                      ? playlist.images[playlist.images.length - 1]?.url ||
+                        playlist.images[0].url // Use smallest available
+                      : null;
+
                   playlistItem.innerHTML = `
                     <div class="playlist-art">
                       ${
-                        playlist.images && playlist.images[0]
-                          ? `<img src="${playlist.images[0].url}" alt="${playlist.name}">`
+                        playlistImageUrl
+                          ? `<img src="${playlistImageUrl}" alt="${playlist.name}" loading="lazy">`
                           : "📋"
                       }
                     </div>
@@ -1487,9 +1945,16 @@
       }
 
       async function fetchPlaylistTracks(playlistId, playlistName) {
+        const playlistSongs = document.getElementById("playlistSongs");
+
+        // Show loading state immediately
+        if (playlistSongs) {
+          showSkeletonLoading("playlistSongs");
+        }
+
         try {
           const tracksRes = await fetch(
-            `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=20`,
+            `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=15`, // Reduced for faster loading
             { headers: { Authorization: "Bearer " + spotifyState.accessToken } }
           );
 
@@ -1500,7 +1965,6 @@
                 ?.map((item) => item.track)
                 .filter((track) => track && track.id) || [];
 
-            const playlistSongs = document.getElementById("playlistSongs");
             if (playlistSongs) {
               playlistSongs.innerHTML = "";
 
@@ -1508,10 +1972,13 @@
                 // Add playlist tracks to allTracks array for global controls
                 allTracks = [...allTracks, ...tracks];
 
+                // Use document fragment for better performance
+                const fragment = document.createDocumentFragment();
                 tracks.forEach((track) => {
                   const songRow = createSongRow(track, playlistSongs);
-                  playlistSongs.appendChild(songRow);
+                  fragment.appendChild(songRow);
                 });
+                playlistSongs.appendChild(fragment);
               } else {
                 playlistSongs.innerHTML =
                   '<p style="text-align: center; color: #666; font-size: 0.8rem;">No tracks in this playlist</p>';
@@ -1531,16 +1998,25 @@
       async function loginSpotify() {
         console.log("loginSpotify called");
         try {
+          console.log("clientId:", clientId);
+          console.log("redirectUri:", redirectUri);
+          console.log("scopes:", scopes);
+
           showStatus("Connecting to Spotify...", "info");
           const btn = document.getElementById("connectSpotifyBtn");
           if (btn) {
             btn.disabled = true;
-            btn.textContent = "Connecting...";
+            btn.innerHTML = '<div class="loading-spinner"></div>Connecting...';
           }
 
+          console.log("Generating code verifier...");
           const verifier = generateCodeVerifier();
+          console.log("Code verifier generated, length:", verifier.length);
           sessionStorage.setItem("spotify_verifier", verifier);
+
+          console.log("Generating code challenge...");
           const challenge = await generateCodeChallenge(verifier);
+          console.log("Code challenge generated:", challenge);
 
           const url =
             `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}` +
@@ -1548,10 +2024,14 @@
             `&redirect_uri=${encodeURIComponent(redirectUri)}` +
             `&code_challenge_method=S256&code_challenge=${challenge}`;
 
-          console.log("Redirecting to:", url);
-          window.location = url;
+          console.log("Full Spotify URL:", url);
+          console.log("About to redirect to Spotify...");
+
+          // Try using window.location.href instead
+          window.location.href = url;
         } catch (error) {
           console.error("Login error:", error);
+          console.error("Login error stack:", error.stack);
           showStatus(
             "Failed to connect to Spotify. Please try again.",
             "error"
@@ -1670,6 +2150,12 @@
             return;
           }
 
+          // Show loading states immediately
+          showSkeletonLoading("recentSongs");
+          showSkeletonLoading("suggestedSongs");
+          showLoadingState("playlistGrid", "Loading playlists...");
+          showLoadingState("discoverySongs", "Finding new music...");
+
           // Fetch recent tracks
           const recentRes = await fetch(
             "https://api.spotify.com/v1/me/player/recently-played?limit=10",
@@ -1766,11 +2252,27 @@
             }
           }
 
-          // Fetch recommendations and playlists
-          await Promise.all([
-            fetchSpotifyRecommendations(recentTracks),
-            fetchUserPlaylists(),
-          ]);
+          // Fetch recommendations, discovery, and playlists in parallel for speed
+          const [recommendationsResult, discoveryResult, playlistsResult] =
+            await Promise.allSettled([
+              fetchSpotifyRecommendations(recentTracks),
+              fetchDiscoveryRecommendations(recentTracks),
+              fetchUserPlaylists(),
+            ]);
+
+          // Log any failures but don't block the UI
+          if (recommendationsResult.status === "rejected") {
+            console.warn(
+              "Recommendations failed:",
+              recommendationsResult.reason
+            );
+          }
+          if (discoveryResult.status === "rejected") {
+            console.warn("Discovery failed:", discoveryResult.reason);
+          }
+          if (playlistsResult.status === "rejected") {
+            console.warn("Playlists failed:", playlistsResult.reason);
+          }
         } catch (error) {
           console.error("Fetch tracks error:", error);
           showStatus(
@@ -1874,6 +2376,199 @@
         }
       }
 
+      async function fetchDiscoveryRecommendations(seedTracks) {
+        try {
+          const discoveryContainer = document.getElementById("discoverySongs");
+          const messagesContainer =
+            document.getElementById("discoveryMessages");
+
+          if (!discoveryContainer) return;
+
+          if (!seedTracks.length) {
+            if (messagesContainer) {
+              messagesContainer.textContent =
+                "Connect Spotify to discover new music based on your taste!";
+              messagesContainer.style.display = "block";
+            }
+            discoveryContainer.innerHTML = "";
+            return;
+          }
+
+          // Show loading message
+          if (messagesContainer) {
+            messagesContainer.textContent =
+              "🎯 Finding new music just for you...";
+            messagesContainer.style.display = "block";
+          }
+
+          // Get user's top artists for more diverse recommendations
+          const topArtistsRes = await fetch(
+            "https://api.spotify.com/v1/me/top/artists?limit=5&time_range=medium_term",
+            { headers: { Authorization: "Bearer " + spotifyState.accessToken } }
+          );
+
+          let seedArtists = [];
+          if (topArtistsRes.ok) {
+            const artistsData = await topArtistsRes.json();
+            seedArtists =
+              artistsData.items?.slice(0, 2).map((artist) => artist.id) || [];
+          }
+
+          // Use different seed approach for discovery - mix of tracks and artists
+          const seedTrackIds = seedTracks.slice(0, 2).map((track) => track.id);
+          const seedParams = [];
+
+          if (seedTrackIds.length > 0) {
+            seedParams.push(`seed_tracks=${seedTrackIds.join(",")}`);
+          }
+          if (seedArtists.length > 0) {
+            seedParams.push(`seed_artists=${seedArtists.join(",")}`);
+          }
+
+          // Add some discovery-focused audio features
+          seedParams.push("min_popularity=20"); // Include less mainstream tracks
+          seedParams.push("max_popularity=80"); // But not completely obscure
+          seedParams.push("limit=12"); // Get a few extra to filter
+
+          const discoveryRes = await fetch(
+            `https://api.spotify.com/v1/recommendations?${seedParams.join(
+              "&"
+            )}`,
+            { headers: { Authorization: "Bearer " + spotifyState.accessToken } }
+          );
+
+          if (discoveryRes.ok) {
+            const discoveryData = await discoveryRes.json();
+            let discoveryTracks =
+              discoveryData.tracks?.filter((track) => track && track.id) || [];
+
+            // Filter out tracks already in recent tracks and suggestions
+            const existingTrackIds = new Set(allTracks.map((t) => t.id));
+            discoveryTracks = discoveryTracks.filter(
+              (track) => !existingTrackIds.has(track.id)
+            );
+
+            if (discoveryTracks.length > 0) {
+              discoveryContainer.innerHTML = "";
+              if (messagesContainer) {
+                messagesContainer.textContent = `🎯 Found ${discoveryTracks.length} fresh tracks for you!`;
+              }
+
+              // Add discovery tracks to allTracks array
+              allTracks = [...allTracks, ...discoveryTracks.slice(0, 10)];
+
+              discoveryTracks.slice(0, 10).forEach((track) => {
+                const songRow = createSongRow(track, discoveryContainer);
+                discoveryContainer.appendChild(songRow);
+              });
+
+              // Hide messages after showing tracks
+              setTimeout(() => {
+                if (messagesContainer) {
+                  messagesContainer.style.display = "none";
+                }
+              }, 3000);
+              return;
+            }
+          }
+
+          // Fallback 1: Try genre-based recommendations
+          console.log("Trying genre-based discovery...");
+          const genreRes = await fetch(
+            "https://api.spotify.com/v1/recommendations/available-genre-seeds",
+            { headers: { Authorization: "Bearer " + spotifyState.accessToken } }
+          );
+
+          if (genreRes.ok) {
+            const genreData = await genreRes.json();
+            const genres = genreData.genres || [];
+
+            // Pick some popular but diverse genres
+            const discoveryGenres = genres
+              .filter((genre) =>
+                [
+                  "indie-pop",
+                  "alternative",
+                  "indie-rock",
+                  "pop",
+                  "electronic",
+                  "chill",
+                ].includes(genre)
+              )
+              .slice(0, 3);
+
+            if (discoveryGenres.length > 0) {
+              const genreBasedRes = await fetch(
+                `https://api.spotify.com/v1/recommendations?seed_genres=${discoveryGenres.join(
+                  ","
+                )}&min_popularity=30&max_popularity=85&limit=10`,
+                {
+                  headers: {
+                    Authorization: "Bearer " + spotifyState.accessToken,
+                  },
+                }
+              );
+
+              if (genreBasedRes.ok) {
+                const genreData = await genreBasedRes.json();
+                let genreTracks =
+                  genreData.tracks?.filter((track) => track && track.id) || [];
+
+                // Filter out existing tracks
+                const existingTrackIds = new Set(allTracks.map((t) => t.id));
+                genreTracks = genreTracks.filter(
+                  (track) => !existingTrackIds.has(track.id)
+                );
+
+                if (genreTracks.length > 0) {
+                  discoveryContainer.innerHTML = "";
+                  if (messagesContainer) {
+                    messagesContainer.textContent = `🎯 Discovered ${genreTracks.length} tracks from trending genres!`;
+                  }
+
+                  // Add to allTracks array
+                  allTracks = [...allTracks, ...genreTracks];
+
+                  genreTracks.forEach((track) => {
+                    const songRow = createSongRow(track, discoveryContainer);
+                    discoveryContainer.appendChild(songRow);
+                  });
+
+                  setTimeout(() => {
+                    if (messagesContainer) {
+                      messagesContainer.style.display = "none";
+                    }
+                  }, 3000);
+                  return;
+                }
+              }
+            }
+          }
+
+          // Final fallback: Show encouraging message
+          discoveryContainer.innerHTML = "";
+          if (messagesContainer) {
+            messagesContainer.innerHTML =
+              "🎯 Discovery panel ready! Play more music to get personalized recommendations.";
+            messagesContainer.style.display = "block";
+          }
+        } catch (error) {
+          console.error("Discovery recommendations error:", error);
+          const discoveryContainer = document.getElementById("discoverySongs");
+          const messagesContainer =
+            document.getElementById("discoveryMessages");
+
+          if (discoveryContainer) {
+            discoveryContainer.innerHTML = "";
+          }
+          if (messagesContainer) {
+            messagesContainer.textContent =
+              "🎯 Discovery temporarily unavailable. Try again later!";
+            messagesContainer.style.display = "block";
+          }
+        }
+      }
+
       function showFallbackMusic() {
         const fallbackTracks = [
           {
@@ -1944,6 +2639,18 @@
             '<p style="text-align: center; color: #666; font-size: 0.8rem;">Connect Spotify for personalized suggestions!</p>';
         }
 
+        // Clear discovery panel
+        const discoveryContainer = document.getElementById("discoverySongs");
+        const discoveryMessages = document.getElementById("discoveryMessages");
+        if (discoveryContainer) {
+          discoveryContainer.innerHTML = "";
+        }
+        if (discoveryMessages) {
+          discoveryMessages.textContent =
+            "Connect Spotify to discover new music!";
+          discoveryMessages.style.display = "block";
+        }
+
         // Clear playlists
         const playlistGrid = document.getElementById("playlistGrid");
         const playlistSongs = document.getElementById("playlistSongs");
@@ -1999,8 +2706,47 @@
         }
       }
 
+      // Load Spotify SDK dynamically
+      function loadSpotifySDK() {
+        return new Promise((resolve, reject) => {
+          // Check if already loaded
+          if (window.Spotify) {
+            console.log("Spotify SDK already loaded");
+            resolve();
+            return;
+          }
+
+          console.log("Loading Spotify SDK...");
+          const script = document.createElement("script");
+          script.src = "https://sdk.scdn.co/spotify-player.js";
+          script.async = true;
+
+          script.onload = () => {
+            console.log("Spotify SDK script loaded");
+            // The SDK will call onSpotifyWebPlaybackSDKReady when ready
+            resolve();
+          };
+
+          script.onerror = (error) => {
+            console.error("Failed to load Spotify SDK:", error);
+            reject(error);
+          };
+
+          document.head.appendChild(script);
+        });
+      }
+
       function initializeApp() {
         console.log("Initializing app...");
+
+        // Load Spotify SDK
+        loadSpotifySDK().catch((error) => {
+          console.error("Could not load Spotify SDK:", error);
+          showStatus(
+            "Failed to load Spotify SDK. Some features may not work.",
+            "error"
+          );
+        });
 
         // Connect Spotify button
         const connectBtn = document.getElementById("connectSpotifyBtn");
@@ -2009,14 +2755,18 @@
           connectBtn.addEventListener("click", (e) => {
             console.log("Connect button clicked!");
             e.preventDefault();
+            console.log("Spotify state:", spotifyState);
             if (spotifyState.isConnected) {
               if (confirm("Already connected! Want to refresh your music?")) {
                 fetchRecommendedTracks();
               }
             } else {
+              console.log("Calling loginSpotify...");
               loginSpotify();
             }
           });
+        } else {
+          console.error("Connect button not found!");
         }
 
         // Global control event listeners
@@ -2059,6 +2809,128 @@
       } else {
         initializeApp();
       }
+      const creatorCardsContainer = document.getElementById("creatorCards");
+      const watchLaterBtn = document.getElementById("watchLaterBtn");
+
+      // --- Youtube CONFIG ---
+      const API_KEY = "AIzaSyD6ISfx6ekKOVlk7sLuvg5tp_KahhgfU4s";
+      const FAVORITE_CREATORS = [
+        { id: "UCl8KpmxzXJ5tY5LqAV5DO1w", name: "amazingishgrace" },
+        { id: "UCFSyDmCD5kaQ_OeiTGEoyZg", name: "BeaCreativeKnits" },
+        { id: "UC9CuvdOVfMPvKCiwdGKL3cQ", name: "Game Grumps" },
+        { id: "UCQuRK-VFyCjf3VCqZkCDveA", name: "Uncomfy" },
+      ];
+
+      const pillsContainer = document.getElementById("creatorPills");
+      const videosContainer = document.getElementById("creatorVideos");
+
+      let allVideos = [];
+      let activeFilter = "all";
+
+      // Fetch upload playlist for a channel
+      async function fetchChannelUploads(channelId) {
+        const channelRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`
+        );
+        const channelData = await channelRes.json();
+        const uploadsId =
+          channelData.items[0].contentDetails.relatedPlaylists.uploads;
+
+        const playlistRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=5&key=${API_KEY}`
+        );
+        const playlistData = await playlistRes.json();
+        return playlistData.items.map((item) => ({
+          channelId,
+          channelTitle: item.snippet.channelTitle,
+          videoId: item.snippet.resourceId.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.medium.url,
+        }));
+      }
+
+      async function loadAllVideos() {
+        // try localStorage cache first
+        const cached = JSON.parse(localStorage.getItem("creatorVideosCache"));
+        if (cached && Date.now() - cached.timestamp < 1000 * 60 * 30) {
+          allVideos = cached.data;
+          renderVideos();
+          return;
+        }
+
+        // fetch fresh
+        const promises = FAVORITE_CREATORS.map((c) =>
+          fetchChannelUploads(c.id)
+        );
+        const results = await Promise.all(promises);
+        allVideos = results.flat();
+
+        // cache
+        localStorage.setItem(
+          "creatorVideosCache",
+          JSON.stringify({ timestamp: Date.now(), data: allVideos })
+        );
+
+        renderVideos();
+      }
+
+      function renderPills() {
+        pillsContainer.innerHTML = "";
+        const allPill = document.createElement("div");
+        allPill.className = "pill active";
+        allPill.textContent = "All";
+        allPill.addEventListener("click", () => {
+          activeFilter = "all";
+          document
+            .querySelectorAll(".pill")
+            .forEach((p) => p.classList.remove("active"));
+          allPill.classList.add("active");
+          renderVideos();
+        });
+        pillsContainer.appendChild(allPill);
+
+        FAVORITE_CREATORS.forEach((c) => {
+          const pill = document.createElement("div");
+          pill.className = "pill";
+          pill.textContent = c.name;
+          pill.addEventListener("click", () => {
+            activeFilter = c.id;
+            document
+              .querySelectorAll(".pill")
+              .forEach((p) => p.classList.remove("active"));
+            pill.classList.add("active");
+            renderVideos();
+          });
+          pillsContainer.appendChild(pill);
+        });
+      }
+
+      function renderVideos() {
+        videosContainer.innerHTML = "";
+        let videos = allVideos;
+        if (activeFilter !== "all") {
+          videos = videos.filter((v) => v.channelId === activeFilter);
+        }
+
+        videos.forEach((v) => {
+          const card = document.createElement("div");
+          card.className = "video-card";
+          card.innerHTML = `
+        <img src="${v.thumbnail}" alt="${v.title}">
+        <p>${v.title}</p>
+      `;
+          card.addEventListener("click", () => {
+            window.open(
+              `https://www.youtube.com/watch?v=${v.videoId}`,
+              "_blank"
+            );
+          });
+          videosContainer.appendChild(card);
+        });
+      }
+
+      renderPills();
+      loadAllVideos();
     </script>
   </body>
 </html>
